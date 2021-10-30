@@ -123,3 +123,19 @@
 		if(P.client)
 			players++
 	return players
+/proc/active_num_players()
+	var/active_players = 0
+	for(var/mob/M in GLOB.player_list)
+		if(!M.mind || !M.client || M.client.inactivity > 10 * 10 * 60) // longer than 10 minutes AFK counts them as inactive
+			continue
+		active_players++
+	return active_players
+// BEGIN_INTERNALS
+// END_INTERNALS
+// BEGIN_FILE_DIR
+#define FILE_DIR .
+// END_FILE_DIR
+// BEGIN_PREFERENCES
+// END_PREFERENCES
+// BEGIN_INCLUDE
+// END_INCLUDE

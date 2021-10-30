@@ -17,8 +17,9 @@
 	/// A list of roles that add weight to the event
 	var/list/role_weights = list()
 	var/datum/event/event_type
+	var/min_active_players
 
-/datum/event_meta/New(event_severity, event_name, datum/event/type, event_weight, list/job_weights, is_one_shot = FALSE, min_event_weight = 0, max_event_weight = INFINITY)
+/datum/event_meta/New(event_severity, event_name, datum/event/type, event_weight, list/job_weights, is_one_shot = FALSE, min_event_weight = 0, max_event_weight = INFINITY, min_players = 1)
 	name = event_name
 	severity = event_severity
 	event_type = type
@@ -26,6 +27,7 @@
 	weight = event_weight
 	min_weight = min_event_weight
 	max_weight = max_event_weight
+	min_active_players = min_players
 	if(job_weights)
 		role_weights = job_weights
 
