@@ -125,8 +125,11 @@
 	return players
 /proc/active_num_players()
 	var/active_players = 0
-	for(var/mob/M in GLOB.player_list)
-		if(!M.mind || !M.client || M.client.inactivity > 10 * 10 * 60) // longer than 10 minutes AFK counts them as inactive
+	for(var/thing in GLOB.human_list)
+		var/mob/living/carbon/human/H = thing
+		var/turf/T = get_turf(H)
+		var/mob/M = thing
+		if(!M.mind || !M.client || M.client.inactivity > 10 * 10 * 60 || !is_station_level(T.z) || H.stat == DEAD)
 			continue
 		active_players++
 	return active_players
