@@ -50,7 +50,7 @@ GLOBAL_LIST_EMPTY(event_last_fired)
 		next_event = null						// When set to null, a random event will be selected next time
 	else
 		// If not, wait for one minute, instead of one tick, before checking again.
-		next_event_time += (60 * 2)
+		next_event_time += (60 * 10)
 
 
 /datum/event_container/proc/acquire_event()
@@ -85,7 +85,36 @@ GLOBAL_LIST_EMPTY(event_last_fired)
 
 /datum/event_container/proc/set_event_delay()
 	// If the next event time has not yet been set and we have a custom first time start
-	next_event_time = (60 * 2)
+	if(next_event_time == 0 && config.event_first_run[severity])
+		var/lower = config.event_first_run[severity]["lower"]
+		var/upper = config.event_first_run[severity]["upper"]
+		var/event_delay = rand(lower, upper)
+		next_event_time = world.time + event_delay
+	// Otherwise, follow the standard setup process
+	else
+		var/playercount_modifier = 1
+		switch(GLOB.player_list.len)
+			if(0 to 10)
+				playercount_modifier = 1.2
+			if(11 to 15)
+				playercount_modifier = 1.1
+			if(16 to 25)
+				playercount_modifier = 1
+			if(26 to 35)
+				playercount_modifier = 0.9
+			if(36 to 50)
+				playercount_modifier = 0.8
+			if(50 to 80)
+				playercount_modifier = 0.7
+			if(80 to 10000)
+				playercount_modifier = 0.6
+
+		playercount_modifier = playercount_modifier * delay_modifier
+
+		var/event_delay = rand(config.event_delay_lower[severity], config.event_delay_upper[severity]) * playercount_modifier
+		next_event_time = world.time + event_delay
+
+	log_debug("Next event of severity [GLOB.severity_to_string[severity]] in [(next_event_time - world.time)/600] minutes.")
 
 /datum/event_container/proc/SelectEvent()
 	var/datum/event_meta/EM = input("Select an event to queue up.", "Event Selection", null) as null|anything in available_events
